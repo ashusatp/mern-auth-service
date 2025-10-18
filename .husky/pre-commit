@@ -1,0 +1,3 @@
+#!/bin/sh
+export PATH="/Users/ashutosh/.nvm/versions/node/v20.19.2/bin:$PATH"
+npx lint-staged

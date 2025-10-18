@@ -1,0 +1,6 @@
+{
+    "git.path": "/usr/bin/git",
+    "terminal.integrated.env.osx": {
+        "PATH": "/Users/ashutosh/.nvm/versions/node/v20.19.2/bin:${env:PATH}"
+    }
+}
