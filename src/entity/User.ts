@@ -29,6 +29,9 @@ export class User {
     })
     googleId?: string
 
+    @Column({ type: 'varchar', length: 255, default: 'customer' })
+    role!: string
+
     @Column({
         name: 'last_sign_in_at',
         type: 'timestamp',

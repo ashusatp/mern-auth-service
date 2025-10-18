@@ -3,6 +3,7 @@ import { UserData } from '../types'
 import bcrypt from 'bcrypt'
 import { Repository } from 'typeorm'
 import createHttpError from 'http-errors'
+import { USER_ROLES } from '../constants'
 
 export class UserService {
     constructor(private userRepository: Repository<User>) {}
@@ -15,6 +16,7 @@ export class UserService {
                 name: `${firstName} ${lastName}`,
                 email,
                 password: hashedPassword,
+                role: USER_ROLES.CUSTOMER,
             })
 
             return await this.userRepository.save(user)
