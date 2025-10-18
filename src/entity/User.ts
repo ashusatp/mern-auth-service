@@ -37,11 +37,11 @@ export class User {
         type: 'timestamp',
         default: () => 'CURRENT_TIMESTAMP',
     })
-    lastSignInAt!: Date
+    last_sign_in_at!: Date
 
     @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date = new Date()
+    created_at: Date = new Date()
 
     @UpdateDateColumn({ name: 'updated_at' })
-    updatedAt: Date = new Date()
+    updated_at: Date = new Date()
 }

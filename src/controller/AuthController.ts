@@ -1,18 +1,16 @@
-import fs from 'fs'
-import path from 'path'
 import { RegisterUserRequest } from '../types'
 import { Response, NextFunction } from 'express'
 import { UserService } from '../service/UserService'
 import { Logger } from 'winston'
 import { validationResult } from 'express-validator'
-import { JwtPayload, sign } from 'jsonwebtoken'
-import createHttpError from 'http-errors'
-import { Config } from '../config'
+import { JwtPayload } from 'jsonwebtoken'
+import { TokenService } from '../service/TokenService'
 
 export class AuthController {
     constructor(
         private userService: UserService,
         private logger: Logger,
+        private tokenService: TokenService,
     ) {}
 
     async register(
@@ -47,51 +45,24 @@ export class AuthController {
                 email: user.email,
             })
 
-            let privateKey: Buffer
-            try {
-                privateKey = fs.readFileSync(
-                    path.join(__dirname, '../../certs/private.pem'),
-                )
-            } catch (error) {
-                const err = createHttpError(
-                    500,
-                    'Failed to read private key from file',
-                    {
-                        cause:
-                            error instanceof Error
-                                ? error.message
-                                : 'Unknown error',
-                    },
-                )
-                next(err)
-                return
-            }
-
-            const patload: JwtPayload = {
+            // generate payload
+            const payload: JwtPayload = {
                 sub: String(user.id),
                 role: user.role,
             }
 
-            const accessToken = sign(patload, privateKey, {
-                algorithm: 'RS256',
-                expiresIn: '1h',
-                issuer: 'auth-service',
-            })
+            // generate access token
+            const accessToken = this.tokenService.generateAccessToken(payload)
 
-            if (!Config.REFRESH_JWT_SECRET) {
-                const err = createHttpError(
-                    500,
-                    'Refresh JWT secret not configured',
-                )
-                next(err)
-                return
-            }
+            // store refresh token
+            const storedRefreshToken =
+                await this.tokenService.storeRefreshToken(user)
 
-            const refreshToken = sign(patload, Config.REFRESH_JWT_SECRET, {
-                algorithm: 'HS256',
-                expiresIn: '30d',
-                issuer: 'auth-service',
-            })
+            // generate refresh token
+            const refreshToken = this.tokenService.generateRefreshToken(
+                payload,
+                String(storedRefreshToken.id),
+            )
 
             // set cookies
             res.cookie('access_token', accessToken, {
