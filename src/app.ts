@@ -3,14 +3,27 @@ import express, { NextFunction, Request, Response } from 'express'
 import logger from './config/logger'
 import { HttpError } from 'http-errors'
 import cors from 'cors'
+import authRouter from './routes/auth'
+import cookieParser from 'cookie-parser'
+import { Config } from './config'
 
 const app = express()
+
+const ALLOWED_DOMAINS = [Config.CLIENT_UI_DOMAIN, Config.ADMIN_UI_DOMAIN]
+
+app.use(cors({ origin: ALLOWED_DOMAINS as string[], credentials: true }))
+
+app.use(express.static('public'))
+app.use(cookieParser())
+app.use(express.json())
 
 app.get('/', async (req, res) => {
     // const err = createHttpError(401, "you are not allowed to access this page");
     // next(err);
     res.status(200).send('welcome to API service')
 })
+
+app.use('/auth', authRouter)
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {

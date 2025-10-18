@@ -2,10 +2,7 @@ import { config } from 'dotenv'
 import path from 'path'
 
 config({
-    path: path.join(
-        __dirname,
-        `../../.env.${process.env.NODE_ENV || 'development'}`,
-    ),
+    path: path.join(__dirname, `../../.env.${process.env.NODE_ENV || 'dev'}`),
 })
 
 const {
@@ -19,6 +16,8 @@ const {
     JWT_SECRET,
     JWT_EXPIRES_IN,
     ADMIN_USER_TOKEN,
+    CLIENT_UI_DOMAIN,
+    ADMIN_UI_DOMAIN,
 } = process.env
 
 export const Config = {
@@ -32,4 +31,6 @@ export const Config = {
     JWT_SECRET,
     JWT_EXPIRES_IN,
     ADMIN_USER_TOKEN,
+    CLIENT_UI_DOMAIN,
+    ADMIN_UI_DOMAIN,
 }
