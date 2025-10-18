@@ -2,6 +2,7 @@ import { User } from '../entity/User'
 import { UserData } from '../types'
 import bcrypt from 'bcrypt'
 import { Repository } from 'typeorm'
+import createHttpError from 'http-errors'
 
 export class UserService {
     constructor(private userRepository: Repository<User>) {}
@@ -9,14 +10,19 @@ export class UserService {
     async create({ firstName, lastName, email, password }: UserData) {
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        const user = this.userRepository.create({
-            name: `${firstName} ${lastName}`,
-            email,
-            password: hashedPassword,
-        })
+        try {
+            const user = this.userRepository.create({
+                name: `${firstName} ${lastName}`,
+                email,
+                password: hashedPassword,
+            })
 
-        await this.userRepository.save(user)
-
-        return user
+            return await this.userRepository.save(user)
+        } catch (error) {
+            const httpError = createHttpError(500, 'Failed to create user', {
+                cause: error instanceof Error ? error.message : 'Unknown error',
+            })
+            throw httpError
+        }
     }
 }
