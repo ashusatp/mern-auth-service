@@ -27,4 +27,31 @@ export class UserService {
             throw httpError
         }
     }
+
+    async findByEmail(email: string) {
+        try {
+            const user = await this.userRepository.findOne({
+                where: { email },
+            })
+            if (!user) {
+                const httpError = createHttpError(404, 'User not found', {
+                    cause: 'User not found',
+                })
+                throw httpError
+            }
+            return user
+        } catch (error) {
+            const httpError = createHttpError(
+                500,
+                'Failed to find user by email',
+                {
+                    cause:
+                        error instanceof Error
+                            ? error.message
+                            : 'Unknown error',
+                },
+            )
+            throw httpError
+        }
+    }
 }
