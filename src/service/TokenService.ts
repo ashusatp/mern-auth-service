@@ -82,4 +82,34 @@ export class TokenService {
             throw httpError
         }
     }
+
+    async deleteRefreshToken(refreshTokenId: number) {
+        try {
+            const token = await this.refreshTokenRepository.delete({
+                id: refreshTokenId,
+            })
+
+            if (token.affected === 0) {
+                const httpError = createHttpError(
+                    404,
+                    'Refresh token not found',
+                )
+                throw httpError
+            }
+
+            return token.affected === 1
+        } catch (error) {
+            const httpError = createHttpError(
+                500,
+                'Failed to delete refresh token',
+                {
+                    cause:
+                        error instanceof Error
+                            ? error.message
+                            : 'Unknown error',
+                },
+            )
+            throw httpError
+        }
+    }
 }

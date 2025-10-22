@@ -6,6 +6,7 @@ import { validationResult } from 'express-validator'
 import { JwtPayload } from 'jsonwebtoken'
 import { TokenService } from '../service/TokenService'
 import { CredentialService } from '../service/CredentialService'
+import createHttpError from 'http-errors'
 export class AuthController {
     constructor(
         private userService: UserService,
@@ -197,6 +198,69 @@ export class AuthController {
             })
         } catch (error) {
             this.logger.error('Failed to get self', { error })
+            next(error)
+        }
+    }
+
+    async refresh(req: AuthRequest, res: Response, next: NextFunction) {
+        try {
+            // generate payload
+            const payload: JwtPayload = {
+                sub: String(req.auth.sub),
+                role: req.auth.role,
+            }
+
+            // generate access token
+            const accessToken = this.tokenService.generateAccessToken(payload)
+
+            // find user
+            const user = await this.userService.findById(Number(req.auth.sub))
+            if (!user) {
+                const error = createHttpError(
+                    400,
+                    'User with this token does not exist',
+                )
+
+                next(error)
+                return
+            }
+
+            // store refresh token
+            const storedRefreshToken =
+                await this.tokenService.storeRefreshToken(user)
+
+            // delete old refresh token
+            await this.tokenService.deleteRefreshToken(
+                Number((req.auth as JwtPayload)?.jti),
+            )
+
+            // generate refresh token
+            const refreshToken = this.tokenService.generateRefreshToken(
+                payload,
+                String(storedRefreshToken.id),
+            )
+
+            // set cookies
+            res.cookie('access_token', accessToken, {
+                domain: 'localhost',
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60, // 1 hour
+                httpOnly: true, // very important
+            })
+            res.cookie('refresh_token', refreshToken, {
+                domain: 'localhost',
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+                httpOnly: true, // very important
+            })
+
+            // response
+            res.status(200).json({
+                message: 'Token refreshed successfully',
+                userId: user.id,
+            })
+        } catch (error) {
+            this.logger.error('Failed to refresh token', { error })
             next(error)
         }
     }
