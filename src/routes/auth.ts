@@ -13,6 +13,7 @@ import { RefreshToken } from '../entity/RefreshToken'
 import { CredentialService } from '../service/CredentialService'
 import { authenticate } from '../middleware/authenticate'
 import validateRefreshToken from '../middleware/validateRefreshToken'
+import parseRefreshToken from '../middleware/parseRefreshToken'
 const router = express.Router()
 
 // we can also use inversify to inject the dependencies
@@ -56,6 +57,13 @@ router.post(
     validateRefreshToken,
     (req: Request, res: Response, next: NextFunction) =>
         authController.refresh(req as AuthRequest, res, next),
+)
+
+router.post(
+    '/logout',
+    parseRefreshToken,
+    (req: Request, res: Response, next: NextFunction) =>
+        authController.logout(req as AuthRequest, res, next),
 )
 
 export default router

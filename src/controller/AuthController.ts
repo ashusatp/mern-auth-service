@@ -264,4 +264,30 @@ export class AuthController {
             next(error)
         }
     }
+
+    async logout(req: AuthRequest, res: Response, next: NextFunction) {
+        try {
+            // delete refresh token
+            await this.tokenService.deleteRefreshToken(
+                Number((req.auth as JwtPayload)?.jti),
+            )
+
+            // user has been logged out successfully
+            this.logger.info('User has been logged out successfully', {
+                userId: Number(req.auth?.sub),
+            })
+
+            // delete cookies
+            res.clearCookie('access_token')
+            res.clearCookie('refresh_token')
+
+            // response
+            res.status(200).json({
+                message: 'User logged out successfully',
+            })
+        } catch (error) {
+            this.logger.error('Failed to logout user', { error })
+            next(error)
+        }
+    }
 }
