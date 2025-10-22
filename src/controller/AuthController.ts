@@ -1,4 +1,4 @@
-import { RegisterUserRequest, LoginUserRequest } from '../types'
+import { RegisterUserRequest, LoginUserRequest, AuthRequest } from '../types'
 import { Response, NextFunction } from 'express'
 import { UserService } from '../service/UserService'
 import { Logger } from 'winston'
@@ -177,12 +177,26 @@ export class AuthController {
             })
 
             // response
-            res.status(201).json({
+            res.status(200).json({
                 message: 'User logged in successfully',
                 userId: existingUser.id,
             })
         } catch (error) {
             this.logger.error('Failed to login user', { error })
+            next(error)
+        }
+    }
+
+    async self(req: AuthRequest, res: Response, next: NextFunction) {
+        try {
+            const user = await this.userService.findById(Number(req.auth.sub))
+
+            res.status(200).json({
+                message: 'User details fetched successfully',
+                user: { ...user, password: undefined },
+            })
+        } catch (error) {
+            this.logger.error('Failed to get self', { error })
             next(error)
         }
     }

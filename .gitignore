@@ -134,3 +134,6 @@ dist
 
 # Certificates
 certs/
+
+# Public
+public/

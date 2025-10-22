@@ -54,4 +54,31 @@ export class UserService {
             throw httpError
         }
     }
+
+    async findById(id: number) {
+        try {
+            const user = await this.userRepository.findOne({
+                where: { id },
+            })
+            if (!user) {
+                const httpError = createHttpError(404, 'User not found', {
+                    cause: 'User not found',
+                })
+                throw httpError
+            }
+            return user
+        } catch (error) {
+            const httpError = createHttpError(
+                500,
+                'Failed to find user by id',
+                {
+                    cause:
+                        error instanceof Error
+                            ? error.message
+                            : 'Unknown error',
+                },
+            )
+            throw httpError
+        }
+    }
 }

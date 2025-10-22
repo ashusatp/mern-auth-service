@@ -17,6 +17,7 @@ const {
     REFRESH_JWT_EXPIRES_IN,
     CLIENT_UI_DOMAIN,
     ADMIN_UI_DOMAIN,
+    JWKS_URI,
 } = process.env
 
 export const Config = {
@@ -31,4 +32,5 @@ export const Config = {
     ADMIN_UI_DOMAIN,
     REFRESH_JWT_SECRET,
     REFRESH_JWT_EXPIRES_IN,
+    JWKS_URI,
 }
