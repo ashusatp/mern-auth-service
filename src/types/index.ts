@@ -26,3 +26,10 @@ export interface AuthRequest extends Request {
         role: string
     }
 }
+
+export interface ITenant {
+    name: string
+    domain: string
+    address: string
+    phone: string
+}
