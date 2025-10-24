@@ -47,3 +47,26 @@ export interface TenantUpdateRequest extends Request {
         id: string
     }
 }
+
+export interface IUserFilters {
+    role?: string
+    name?: string
+    email?: string
+    page?: number
+    limit?: number
+}
+
+export interface IUserUpdate {
+    firstName?: string
+    lastName?: string
+    email?: string
+    password?: string
+    role?: string
+}
+
+export interface UserUpdateRequest extends Request {
+    body: IUserUpdate
+    params: {
+        id: string
+    }
+}
