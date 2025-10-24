@@ -25,17 +25,14 @@ router.post(
     },
 )
 
-router.get(
-    '/',
-    authenticate,
-    (req: Request, res: Response, next: NextFunction) => {
-        tenantController.getTenants(req, res, next)
-    },
-)
+router.get('/', (req: Request, res: Response, next: NextFunction) => {
+    tenantController.getTenants(req, res, next)
+})
 
 router.get(
     '/:id',
     authenticate,
+    access([USER_ROLES.ADMIN]),
     (req: Request, res: Response, next: NextFunction) => {
         tenantController.getTenantById(req, res, next)
     },
