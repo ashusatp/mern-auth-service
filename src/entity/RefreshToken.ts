@@ -26,6 +26,7 @@ export class RefreshToken {
 
     @ManyToOne(() => User, (user: User) => user.id, {
         nullable: false,
+        onDelete: 'CASCADE',
     })
     @JoinColumn({ name: 'user_id' }) // Use @JoinColumn instead
     user!: User
