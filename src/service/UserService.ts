@@ -30,16 +30,9 @@ export class UserService {
 
     async findByEmail(email: string) {
         try {
-            const user = await this.userRepository.findOne({
+            return await this.userRepository.findOne({
                 where: { email },
             })
-            if (!user) {
-                const httpError = createHttpError(404, 'User not found', {
-                    cause: 'User not found',
-                })
-                throw httpError
-            }
-            return user
         } catch (error) {
             const httpError = createHttpError(
                 500,
@@ -57,16 +50,9 @@ export class UserService {
 
     async findById(id: number) {
         try {
-            const user = await this.userRepository.findOne({
+            return await this.userRepository.findOne({
                 where: { id },
             })
-            if (!user) {
-                const httpError = createHttpError(404, 'User not found', {
-                    cause: 'User not found',
-                })
-                throw httpError
-            }
-            return user
         } catch (error) {
             const httpError = createHttpError(
                 500,
