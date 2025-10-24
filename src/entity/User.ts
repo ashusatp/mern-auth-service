@@ -49,9 +49,7 @@ export class User {
     @UpdateDateColumn({ name: 'updated_at' })
     updated_at: Date = new Date()
 
-    @ManyToOne(() => Tenant, (tenant: Tenant) => tenant.id, {
-        nullable: false,
-    })
+    @ManyToOne(() => Tenant, (tenant: Tenant) => tenant.id)
     @JoinColumn({ name: 'tenant_id' })
     tenant!: Tenant
 }
