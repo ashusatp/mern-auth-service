@@ -34,12 +34,7 @@ export class TenantServices {
             const tenant = await this.tenantRepository.findOne({
                 where: { id: Number(id) },
             })
-            if (!tenant) {
-                const httpError = createHttpError(404, 'Tenant not found', {
-                    cause: 'Tenant not found',
-                })
-                throw httpError
-            }
+
             return tenant
         } catch (error) {
             const httpError = createHttpError(
@@ -58,8 +53,11 @@ export class TenantServices {
 
     async update(id: string, tenant: ITenantUpdate) {
         try {
-            await this.tenantRepository.update(Number(id), tenant)
-            return { message: 'Tenant updated successfully' }
+            const result = await this.tenantRepository.update(
+                Number(id),
+                tenant,
+            )
+            return result.affected === 1
         } catch (error) {
             const httpError = createHttpError(500, 'Failed to update tenant', {
                 cause: error instanceof Error ? error.message : 'Unknown error',
@@ -71,12 +69,7 @@ export class TenantServices {
     async delete(id: string) {
         try {
             const result = await this.tenantRepository.delete(Number(id))
-            if (result.affected === 0) {
-                const httpError = createHttpError(404, 'Tenant not found', {
-                    cause: 'Tenant not found',
-                })
-                throw httpError
-            }
+            return result.affected === 1
         } catch (error) {
             const httpError = createHttpError(500, 'Failed to delete tenant', {
                 cause: error instanceof Error ? error.message : 'Unknown error',

@@ -51,6 +51,18 @@ export class TenantController {
         try {
             const { id } = req.params as { id: string }
             const tenant = await this.tenantServices.findById(id)
+
+            if (tenant === null || tenant === undefined) {
+                const httpError = createHttpError(404, 'Tenant not found', {
+                    cause: 'Tenant not found',
+                })
+                throw httpError
+            }
+
+            this.logger.info('Tenant fetched successfully', {
+                tenantId: tenant.id,
+            })
+
             res.status(200).json({
                 message: 'Tenant fetched successfully',
                 tenant,
@@ -98,6 +110,13 @@ export class TenantController {
 
             const tenant = await this.tenantServices.update(id, updateData)
 
+            if (!tenant) {
+                const httpError = createHttpError(404, 'Tenant not found', {
+                    cause: 'Tenant not found',
+                })
+                throw httpError
+            }
+
             this.logger.info('Tenant updated successfully', {
                 tenantId: id,
             })
@@ -115,7 +134,14 @@ export class TenantController {
     async deleteTenant(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params as { id: string }
-            await this.tenantServices.delete(id)
+            const tenant = await this.tenantServices.delete(id)
+
+            if (!tenant) {
+                const httpError = createHttpError(404, 'Tenant not found', {
+                    cause: 'Tenant not found',
+                })
+                throw httpError
+            }
 
             this.logger.info('Tenant deleted successfully', {
                 tenantId: id,
