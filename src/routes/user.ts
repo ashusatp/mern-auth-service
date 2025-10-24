@@ -47,7 +47,7 @@ router.get(
     },
 )
 
-router.put(
+router.patch(
     '/:id',
     authenticate,
     access([USER_ROLES.ADMIN]),
