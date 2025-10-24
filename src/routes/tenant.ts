@@ -8,6 +8,7 @@ import logger from '../config/logger'
 import { authenticate } from '../middleware/authenticate'
 import { access } from '../middleware/access'
 import { USER_ROLES } from '../constants'
+import { TenantUpdateRequest } from '../types'
 
 const router = express.Router()
 
@@ -21,6 +22,40 @@ router.post(
     access([USER_ROLES.ADMIN]),
     (req: Request, res: Response, next: NextFunction) => {
         tenantController.createTenant(req, res, next)
+    },
+)
+
+router.get(
+    '/',
+    authenticate,
+    (req: Request, res: Response, next: NextFunction) => {
+        tenantController.getTenants(req, res, next)
+    },
+)
+
+router.get(
+    '/:id',
+    authenticate,
+    (req: Request, res: Response, next: NextFunction) => {
+        tenantController.getTenantById(req, res, next)
+    },
+)
+
+router.put(
+    '/:id',
+    authenticate,
+    access([USER_ROLES.ADMIN]),
+    (req: TenantUpdateRequest, res: Response, next: NextFunction) => {
+        tenantController.updateTenant(req, res, next)
+    },
+)
+
+router.delete(
+    '/:id',
+    authenticate,
+    access([USER_ROLES.ADMIN]),
+    (req: Request, res: Response, next: NextFunction) => {
+        tenantController.deleteTenant(req, res, next)
     },
 )
 

@@ -33,3 +33,17 @@ export interface ITenant {
     address: string
     phone: string
 }
+
+export interface ITenantUpdate {
+    name?: string
+    domain?: string
+    address?: string
+    phone?: string
+}
+
+export interface TenantUpdateRequest extends Request {
+    body: ITenantUpdate
+    params: {
+        id: string
+    }
+}
